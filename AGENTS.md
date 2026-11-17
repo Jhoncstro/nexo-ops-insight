@@ -28,3 +28,8 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Project rules
+- Data access is client-side via the generated Supabase client with RLS scoped by `owns_company()`; every table row belongs to a company owned by the user.
+- Metric and rule evaluation logic lives in `src/lib/nexus.ts` (pure, unit-tested) so dashboard, intelligence and rules pages stay consistent.
+- Active company is kept in localStorage and provided via `CompanyContext` from the `_authenticated` layout.
