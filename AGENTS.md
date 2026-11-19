@@ -30,6 +30,6 @@ use the editor.
 <!-- LOVABLE:END -->
 
 ## Project rules
-- Data access is client-side via the generated Supabase client with RLS scoped by `owns_company()`; every table row belongs to a company owned by the user.
+- Data access is client-side via the generated Supabase client. The original schema uses owner-based RLS (`owns_company`). The opt-in teams contract and unapplied SQL proposal are documented in `docs/security-foundation.md`; database RLS is always authoritative for roles and tenant isolation.
 - Metric and rule evaluation logic lives in `src/lib/nexus.ts` (pure, unit-tested) so dashboard, intelligence and rules pages stay consistent.
 - Active company is kept in localStorage and provided via `CompanyContext` from the `_authenticated` layout.
