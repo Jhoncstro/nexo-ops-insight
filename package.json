@@ -11,7 +11,9 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "lint:security": "eslint src/components/app-sidebar.tsx src/components/team-panel.tsx src/lib/company.tsx src/lib/data.ts src/lib/security.ts src/lib/session-cache.ts src/lib/session-cache.test.ts src/routes/__root.tsx src/routes/_authenticated/operacoes.tsx src/routes/_authenticated/regras.tsx src/routes/_authenticated/route.tsx src/routes/auth.tsx src/test/setup.ts src/test/auth-recovery.test.tsx src/test/security-database.test.ts src/lib/data.test.ts"
   },
   "overrides": {
     "rolldown": "1.2.1"
@@ -73,6 +75,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.3.14",
     "@eslint/js": "^9.32.0",
     "@lovable.dev/vite-tanstack-config": "2.27.2",
     "@testing-library/jest-dom": "^6.6.0",
@@ -97,5 +100,6 @@
     "typescript-eslint": "^8.56.1",
     "vite": "8.1.5",
     "vitest": "^4.1.10"
-  }
+  },
+  "packageManager": "pnpm@11.25.0"
 }

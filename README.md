@@ -60,3 +60,10 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+
+## Etapa 1 — segurança e equipes
+
+Consulte [implementação, validação e pendências](docs/security-foundation.md).
+Os recursos de equipe exigem a proposta SQL aplicada pelo Lovable em homologação
+e `VITE_NEXUS_TEAMS_ENABLED=true`. Permanecem desativados por padrão.
+Nesta branch, instale e valide com pnpm usando `pnpm-lock.yaml`.

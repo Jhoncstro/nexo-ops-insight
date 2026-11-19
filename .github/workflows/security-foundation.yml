@@ -1,0 +1,27 @@
+name: Security foundation
+on:
+  pull_request:
+  push:
+    branches: [feature/nexus-security-foundation]
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.25.0
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
+      - run: pnpm run typecheck
+      - run: pnpm run lint:security
+      - run: pnpm build
+        env:
+          VITE_SUPABASE_URL: https://example.supabase.co
+          VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_test_placeholder
+          VITE_NEXUS_TEAMS_ENABLED: 'true'

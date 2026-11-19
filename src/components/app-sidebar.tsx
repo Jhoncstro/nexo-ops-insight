@@ -1,14 +1,40 @@
 import { useState } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { BarChart3, Building2, ChevronsUpDown, LayoutDashboard, ListChecks, LogOut, Plus, ShieldCheck } from "lucide-react";
+import {
+  BarChart3,
+  Building2,
+  ChevronsUpDown,
+  LayoutDashboard,
+  ListChecks,
+  LogOut,
+  Plus,
+  ShieldCheck,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { clearSessionCache } from "@/lib/session-cache";
+import { toast } from "sonner";
 import type { Company } from "@/lib/company";
 import {
-  Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
-  SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { NewCompanyForm } from "./new-company-form";
 
@@ -19,16 +45,27 @@ const items = [
   { title: "Regras internas", url: "/regras", icon: ShieldCheck },
 ] as const;
 
-export function AppSidebar({ companies, active, onSelect }: { companies: Company[]; active: Company; onSelect: (id: string) => void }) {
+export function AppSidebar({
+  companies,
+  active,
+  onSelect,
+}: {
+  companies: Company[];
+  active: Company;
+  onSelect: (id: string) => void;
+}) {
   const path = useRouterState({ select: (r) => r.location.pathname });
   const [open, setOpen] = useState(false);
   const qc = useQueryClient();
   const navigate = useNavigate();
 
   async function signOut() {
-    await qc.cancelQueries();
-    qc.clear();
-    await supabase.auth.signOut();
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast.error("Não foi possível sair. Tente novamente.");
+      return;
+    }
+    clearSessionCache(qc);
     navigate({ to: "/auth", replace: true });
   }
 
@@ -42,7 +79,9 @@ export function AppSidebar({ companies, active, onSelect }: { companies: Company
                 {active.name.charAt(0).toUpperCase()}
               </span>
               <div className="grid flex-1 text-left leading-tight">
-                <span className="truncate font-medium text-sidebar-accent-foreground">{active.name}</span>
+                <span className="truncate font-medium text-sidebar-accent-foreground">
+                  {active.name}
+                </span>
                 <span className="truncate text-xs opacity-70">{active.sector || "Empresa"}</span>
               </div>
               <ChevronsUpDown className="ml-auto h-4 w-4" />
@@ -56,7 +95,9 @@ export function AppSidebar({ companies, active, onSelect }: { companies: Company
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => setOpen(true)}><Plus /> Nova empresa</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setOpen(true)}>
+              <Plus /> Nova empresa
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarHeader>
@@ -68,7 +109,10 @@ export function AppSidebar({ companies, active, onSelect }: { companies: Company
               {items.map((i) => (
                 <SidebarMenuItem key={i.url}>
                   <SidebarMenuButton asChild isActive={path === i.url} tooltip={i.title}>
-                    <Link to={i.url}><i.icon /><span>{i.title}</span></Link>
+                    <Link to={i.url}>
+                      <i.icon />
+                      <span>{i.title}</span>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -79,14 +123,24 @@ export function AppSidebar({ companies, active, onSelect }: { companies: Company
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton onClick={signOut} tooltip="Sair"><LogOut /><span>Sair</span></SidebarMenuButton>
+            <SidebarMenuButton onClick={signOut} tooltip="Sair">
+              <LogOut />
+              <span>Sair</span>
+            </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
-          <DialogHeader><DialogTitle>Cadastrar nova empresa</DialogTitle></DialogHeader>
-          <NewCompanyForm onCreated={(id) => { onSelect(id); setOpen(false); }} />
+          <DialogHeader>
+            <DialogTitle>Cadastrar nova empresa</DialogTitle>
+          </DialogHeader>
+          <NewCompanyForm
+            onCreated={(id) => {
+              onSelect(id);
+              setOpen(false);
+            }}
+          />
         </DialogContent>
       </Dialog>
     </Sidebar>
